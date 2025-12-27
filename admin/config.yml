@@ -8,7 +8,7 @@ public_folder: "/images"
 collections:
   - name: "posts"
     label: "Posts"
-    folder: "content/posts"
+    folder: "public/content/posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -18,3 +18,14 @@ collections:
       - { label: "Tags", name: "tags", widget: "list" }
       - { label: "Read Time (min)", name: "readTime", widget: "number" }
       - { label: "Body", name: "body", widget: "markdown" }
+  
+  - name: "documents"
+    label: "Documents"
+    folder: "public/content/documents"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "File", name: "file", widget: "file" }
+      - { label: "Description", name: "description", widget: "text", required: false }

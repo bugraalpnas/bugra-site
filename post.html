@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post | Bugra Alp Nas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .markdown-body {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-body p {
+            margin-bottom: 1em;
+        }
+
+        .markdown-body pre {
+            background-color: #f6f8fa;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <span class="logo">Bugra Alp Nas</span>
+                </a>
+                <!-- Social icons can be duplicated here or made into a component in a proper framework -->
+            </div>
+            <nav class="nav-links">
+                <a href="/posts.html">posts</a>
+                <a href="#">resume</a>
+                <a href="#">research</a>
+                <a href="#">projects</a>
+                <a href="#">talks</a>
+                <a href="#">documents</a>
+            </nav>
+        </header>
+
+        <main>
+            <article class="posts-section">
+                <h1 id="post-title">Loading...</h1>
+                <div class="post-meta" id="post-meta"></div>
+                <hr style="margin: 1rem 0; border: 1px dashed #ccc;">
+                <div id="post-content" class="markdown-body"></div>
+            </article>
+        </main>
+    </div>
+
+    <script>
+        // Simple frontmatter parser for client-side
+        function parseFrontmatter(content) {
+            const match = content.match(/^---\s*([\s\S]*?)\s*---/);
+            if (!match) return { frontmatter: {}, body: content };
+
+            const frontmatterStr = match[1];
+            const body = content.replace(match[0], '').trim();
+            const frontmatter = {};
+
+            frontmatterStr.split('\n').forEach(line => {
+                const parts = line.split(':');
+                if (parts.length >= 2) {
+                    const key = parts[0].trim();
+                    // Basic value handling
+                    let value = parts.slice(1).join(':').trim();
+                    if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+                    frontmatter[key] = value;
+                }
+            });
+
+            return { frontmatter, body };
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('slug');
+
+            if (!slug) {
+                document.getElementById('post-title').innerText = 'Post not found';
+                return;
+            }
+
+            try {
+                // Fetch the raw markdown file. 
+                // Assumption: specific posts are at /content/posts/slug.md
+                // However, Vite serving static files from root 'content' might need check.
+                // Assuming 'content' folder is served or copied. 
+                // Wait, generate-posts.js works on server side.
+                // Vite serves 'public' and root. 
+                // If 'content' is in root, it might not be served by default in production unless configuring static assets.
+                // BUT for now in dev it works if we access /content/posts/...
+                // Let's try fetching from public path if we move them, or just try path.
+
+                // Correction: In Vite, we should probably move 'content' to 'public/content' OR rely on an import map.
+                // For simplicity now, I'll assume we can fetch '/content/posts/' + slug + '.md'
+                // If it fails, we might need to change where posts are stored or copy them to public.
+
+                const response = await fetch(`/content/posts/${slug}.md`);
+
+                if (!response.ok) {
+                    throw new Error('Post not found');
+                }
+
+                const text = await response.text();
+                const { frontmatter, body } = parseFrontmatter(text);
+
+                document.title = (frontmatter.title || slug) + ' | Bugra Alp Nas';
+                document.getElementById('post-title').innerText = frontmatter.title || slug;
+
+                if (frontmatter.date) {
+                    const metaEl = document.getElementById('post-meta');
+                    metaEl.innerHTML = `<span class="badge badge-blue">${frontmatter.date}</span>`;
+                }
+
+                document.getElementById('post-content').innerHTML = marked.parse(body);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('post-title').innerText = 'Error loading post';
+                document.getElementById('post-content').innerText = 'Could not find the post files. Ensure they are in content/posts.';
+            }
+        });
+    </script>
+</body>
+
+</html>

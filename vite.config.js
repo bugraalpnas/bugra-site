@@ -26,6 +26,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         posts: resolve(__dirname, 'posts.html'),
+        documents: resolve(__dirname, 'documents.html'),
+        post: resolve(__dirname, 'post.html'),
         admin: resolve(__dirname, 'admin/index.html'),
       },
     },

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents | Bugra Alp Nas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <span class="logo">Bugra Alp Nas</span>
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a href="/posts.html">posts</a>
+                <a href="#">resume</a>
+                <a href="#">research</a>
+                <a href="#">projects</a>
+                <a href="#">talks</a>
+                <a href="/documents.html" class="active">documents</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="posts-section">
+                <h1>Documents</h1>
+
+                <div class="posts-list" id="docs-container">
+                    <p>Loading documents...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('docs-container');
+
+            try {
+                const response = await fetch('/documents.json');
+                if (response.ok) {
+                    const docs = await response.json();
+                    if (docs.length === 0) {
+                        container.innerHTML = '<p>No documents found.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = '';
+                    docs.forEach(doc => {
+                        const docEl = document.createElement('div');
+                        docEl.className = 'post-item';
+
+                        const date = doc.date ? new Date(doc.date).toISOString().split('T')[0] : '';
+
+                        // doc.file contains the path to the file, e.g. "/images/myfile.pdf" 
+                        // if we configured correct media folder.
+                        // Actually, Decap CMS default media folder is "public/images" mapped to "/images".
+                        // Use doc.file directly.
+
+                        docEl.innerHTML = `
+                            <span class="post-date">${date}</span>
+                            <div class="post-content">
+                                <h2 class="post-title">
+                                    <a href="${doc.file}" target="_blank" style="text-decoration: none; color: inherit;">
+                                        ${doc.title} 
+                                        <span style="font-size: 0.8em; opacity: 0.7;">(Download)</span>
+                                    </a>
+                                </h2>
+                                ${doc.description ? `<p>${doc.description}</p>` : ''}
+                            </div>
+                        `;
+                        container.appendChild(docEl);
+                    });
+                } else {
+                    container.innerHTML = '<p>No documents found or failed to load.</p>';
+                }
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<p>Error loading documents.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>

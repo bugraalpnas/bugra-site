@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const postsDir = path.join(__dirname, 'content/posts');
+const postsDir = path.join(__dirname, 'public/content/posts');
 const outputDir = path.join(__dirname, 'public');
 const outputFile = path.join(outputDir, 'posts.json');
 
@@ -68,3 +68,32 @@ const posts = fs.readdirSync(postsDir)
 
 fs.writeFileSync(outputFile, JSON.stringify(posts, null, 2));
 console.log(`Generated posts.json with ${posts.length} posts.`);
+
+// Documents Generation
+const docsDir = path.join(__dirname, 'public/content/documents');
+const dogsOutputFile = path.join(outputDir, 'documents.json');
+
+if (fs.existsSync(docsDir)) {
+    const documents = fs.readdirSync(docsDir)
+        .filter(file => file.endsWith('.md') || file.endsWith('.json')) // Decap might save as markdown with frontmatter even for files? 
+        // Actually, for file collections, Decap creates a markdown file with frontmatter pointing to the file.
+        .map(file => {
+            if (file.endsWith('.md')) {
+                const content = fs.readFileSync(path.join(docsDir, file), 'utf-8');
+                const data = parseFrontmatter(content);
+                return {
+                    slug: file.replace('.md', ''),
+                    ...data
+                };
+            }
+            return null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    fs.writeFileSync(dogsOutputFile, JSON.stringify(documents, null, 2));
+    console.log(`Generated documents.json with ${documents.length} documents.`);
+} else {
+    console.log('No documents directory found, skipping.');
+    fs.writeFileSync(dogsOutputFile, JSON.stringify([]));
+}

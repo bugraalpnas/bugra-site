@@ -39,7 +39,7 @@
                 <a href="#">research</a>
                 <a href="#">projects</a>
                 <a href="#">talks</a>
-                <a href="#">documents</a>
+                <a href="/documents.html">documents</a>
             </nav>
         </header>
 
@@ -139,7 +139,10 @@
                     postEl.innerHTML = `
                         <span class="post-date">${date}</span>
                         <div class="post-content">
-                            <h2 class="post-title"><span class="post-hash">#</span> ${post.title}</h2>
+                            <h2 class="post-title">
+                                <span class="post-hash">#</span> 
+                                <a href="/post.html?slug=${post.slug}" style="text-decoration: none; color: inherit;">${post.title}</a>
+                            </h2>
                             <div class="post-meta">
                                 <span class="badge ${badgeClass}">${post.lang || 'en'}</span>
                                 <span class="post-tags">[${tagsStr}]</span>
