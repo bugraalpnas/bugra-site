@@ -7,7 +7,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         posts: resolve(__dirname, 'posts.html'),
-        // Add admin entry if needed, though public folder usually handles it
+        admin: resolve(__dirname, 'admin/index.html'),
       },
     },
   },

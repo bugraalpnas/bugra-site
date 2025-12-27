@@ -1,5 +1,6 @@
-# Decap CMS - Ensure admin routes work
-/admin/*  /admin/index.html  200
+# Admin Routing
+/admin/   /admin/index.html   200
+/admin/*  /admin/index.html   200
 
-# Optional: Custom 404 if needed, otherwise Netlify default
-# /*  /404.html  404
+# Default SPA catch-all (optional for this site since we use multi-page)
+# /*        /index.html         200
