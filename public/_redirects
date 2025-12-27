@@ -1,2 +1,5 @@
-/*  /index.html  200
-/admin/ /admin/index.html 200
+# Decap CMS - Ensure admin routes work
+/admin/*  /admin/index.html  200
+
+# Optional: Custom 404 if needed, otherwise Netlify default
+# /*  /404.html  404
