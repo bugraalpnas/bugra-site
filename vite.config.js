@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import fs from 'fs';
 
 export default defineConfig({
   plugins: [
@@ -7,8 +8,6 @@ export default defineConfig({
       name: 'copy-admin-config',
       closeBundle() {
         // Simple copy of config.yml to dist/admin/config.yml since it's not imported by JS
-        const fs = require('fs');
-        const path = require('path');
         const destDir = resolve(__dirname, 'dist/admin');
         if (!fs.existsSync(destDir)) {
           fs.mkdirSync(destDir, { recursive: true });
