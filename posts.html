@@ -100,29 +100,75 @@
 
     <!-- For a real implementation, we'd add a script to parse markdown/JSON -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('posts-container');
             const searchBar = document.querySelector('.search-bar');
             const filterBtns = document.querySelectorAll('.filter-btn');
-            const postItems = document.querySelectorAll('.post-item');
 
+            let allPosts = [];
+
+            // Fetch posts
+            try {
+                const response = await fetch('/posts.json');
+                if (response.ok) {
+                    allPosts = await response.json();
+                    renderPosts(allPosts);
+                } else {
+                    console.error('Failed to load posts');
+                    container.innerHTML = '<p>No posts found.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+
+            function renderPosts(posts) {
+                container.innerHTML = '';
+                posts.forEach(post => {
+                    const postEl = document.createElement('div');
+                    postEl.className = 'post-item';
+
+                    // Format date
+                    const date = new Date(post.date).toISOString().split('T')[0];
+
+                    // Handle tags
+                    const tagsStr = Array.isArray(post.tags) ? post.tags.join(', ') : post.tags;
+
+                    // Badge color
+                    const badgeClass = post.lang === 'tr' ? 'badge-red' : 'badge-blue';
+
+                    postEl.innerHTML = `
+                        <span class="post-date">${date}</span>
+                        <div class="post-content">
+                            <h2 class="post-title"><span class="post-hash">#</span> ${post.title}</h2>
+                            <div class="post-meta">
+                                <span class="badge ${badgeClass}">${post.lang || 'en'}</span>
+                                <span class="post-tags">[${tagsStr}]</span>
+                            </div>
+                            <span class="read-time">${post.readTime || 5} min read</span>
+                        </div>
+                    `;
+                    container.appendChild(postEl);
+                });
+            }
+
+            // Search logic
             searchBar.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
-                postItems.forEach(item => {
-                    const title = item.querySelector('.post-title').textContent.toLowerCase();
-                    item.style.display = title.includes(term) ? 'flex' : 'none';
-                });
+                const filtered = allPosts.filter(post =>
+                    post.title.toLowerCase().includes(term)
+                );
+                renderPosts(filtered);
             });
 
+            // Filter logic
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     const lang = btn.dataset.lang;
 
-                    postItems.forEach(item => {
-                        const postLang = item.querySelector('.badge').textContent.trim();
-                        item.style.display = postLang === lang ? 'flex' : 'none';
-                    });
+                    const filtered = allPosts.filter(post => post.lang === lang);
+                    renderPosts(filtered);
                 });
             });
         });

@@ -4,11 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node generate-posts.js && vite",
+    "build": "node generate-posts.js && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "decap-cms-app": "^3.9.0"
   }
 }
