@@ -27,6 +27,8 @@ export default defineConfig({
         posts: resolve(__dirname, 'posts.html'),
         documents: resolve(__dirname, 'documents.html'),
         post: resolve(__dirname, 'post.html'),
+        resume: resolve(__dirname, 'resume.html'),
+        projects: resolve(__dirname, 'projects.html'),
         admin: resolve(__dirname, 'admin/index.html'),
       },
     },
