@@ -121,13 +121,37 @@
 
             // Fetch posts
             try {
-                const response = await fetch('/posts.json');
-                if (response.ok) {
+                // Try multiple potential paths for posts.json
+                const paths = ['/posts.json', '/public/posts.json', './posts.json', './public/posts.json'];
+                let response;
+
+                for (const path of paths) {
+                    try {
+                        const res = await fetch(path);
+                        if (res.ok) {
+                            response = res;
+                            console.log('Successfully loaded posts from:', path);
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+
+                if (response && response.ok) {
                     allPosts = await response.json();
                     renderPosts(allPosts);
                 } else {
-                    console.error('Failed to load posts');
-                    container.innerHTML = '<p>No posts found.</p>';
+                    console.error('Failed to load posts from any of the standard paths.');
+                    container.innerHTML = `
+                        <div style="padding: 2rem; border: 1px dashed #666; border-radius: 8px; margin-top: 1rem;">
+                            <p><strong>Status:</strong> No posts found or failed to load.</p>
+                            <p style="font-size: 0.9em; color: #888; margin-top: 0.5em;">
+                                If you just added a post via Decap CMS, please run <code>node generate-posts.js</code> 
+                                and refresh this page.
+                            </p>
+                        </div>
+                    `;
                 }
             } catch (error) {
                 console.error('Error fetching posts:', error);

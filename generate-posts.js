@@ -21,27 +21,55 @@ function parseFrontmatter(content) {
 
     const frontmatter = match[1];
     const data = {};
+    const lines = frontmatter.split('\n');
+    let currentKey = null;
 
-    frontmatter.split('\n').forEach(line => {
-        const parts = line.split(':');
-        if (parts.length >= 2) {
-            const key = parts[0].trim();
-            let value = parts.slice(1).join(':').trim();
+    lines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return;
 
-            // Handle arrays like [a, b, c]
-            if (value.startsWith('[') && value.endsWith(']')) {
-                value = value.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-            }
-            // Handle quoted strings
-            else if (value.startsWith('"') && value.endsWith('"')) {
-                value = value.slice(1, -1);
-            }
-            // Handle numbers
-            else if (!isNaN(Number(value))) {
-                value = Number(value);
-            }
+        // Check if it's a new key-value pair
+        const colonIndex = line.indexOf(':');
+        if (colonIndex !== -1 && !line.trim().startsWith('-')) {
+            const key = line.slice(0, colonIndex).trim();
+            let value = line.slice(colonIndex + 1).trim();
 
-            data[key] = value;
+            // Check for multiline string (if it's just a colon followed by nothing)
+            if (value === '' || value === '>' || value === '|') {
+                data[key] = '';
+                currentKey = key;
+            } else {
+                // Handle basic types
+                if (value.startsWith('[') && value.endsWith(']')) {
+                    value = value.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+                } else if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.slice(1, -1);
+                } else if (value.startsWith("'") && value.endsWith("'")) {
+                    value = value.slice(1, -1);
+                } else if (value.toLowerCase() === 'true') {
+                    value = true;
+                } else if (value.toLowerCase() === 'false') {
+                    value = false;
+                } else if (!isNaN(Number(value)) && value !== '') {
+                    value = Number(value);
+                }
+                data[key] = value;
+                currentKey = key;
+            }
+        }
+        // Check if it's a list item
+        else if (trimmedLine.startsWith('- ') && currentKey) {
+            const value = trimmedLine.slice(2).trim().replace(/^"|"$/g, '').replace(/^'|'$/g, '');
+            if (!Array.isArray(data[currentKey])) {
+                data[currentKey] = [];
+            }
+            data[currentKey].push(value);
+        }
+        // Check if it's a continuation of a multiline value
+        else if (line.startsWith(' ') && currentKey) {
+            if (typeof data[currentKey] === 'string') {
+                data[currentKey] = (data[currentKey] + ' ' + trimmedLine).trim();
+            }
         }
     });
 

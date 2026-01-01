@@ -71,8 +71,24 @@
             const container = document.getElementById('docs-container');
 
             try {
-                const response = await fetch('/documents.json');
-                if (response.ok) {
+                // Try multiple potential paths for documents.json
+                const paths = ['/documents.json', '/public/documents.json', './documents.json', './public/documents.json'];
+                let response;
+
+                for (const path of paths) {
+                    try {
+                        const res = await fetch(path);
+                        if (res.ok) {
+                            response = res;
+                            console.log('Successfully loaded documents from:', path);
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+
+                if (response && response.ok) {
                     const docs = await response.json();
                     if (docs.length === 0) {
                         container.innerHTML = '<p>No documents found.</p>';
