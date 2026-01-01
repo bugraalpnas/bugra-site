@@ -145,23 +145,29 @@
             }
 
             try {
-                // Fetch the raw markdown file. 
-                // Assumption: specific posts are at /content/posts/slug.md
-                // However, Vite serving static files from root 'content' might need check.
-                // Assuming 'content' folder is served or copied. 
-                // Wait, generate-posts.js works on server side.
-                // Vite serves 'public' and root. 
-                // If 'content' is in root, it might not be served by default in production unless configuring static assets.
-                // BUT for now in dev it works if we access /content/posts/...
-                // Let's try fetching from public path if we move them, or just try path.
+                // Try multiple paths for the markdown file
+                const paths = [
+                    `/content/posts/${slug}.md`,
+                    `/public/content/posts/${slug}.md`,
+                    `./content/posts/${slug}.md`,
+                    `./public/content/posts/${slug}.md`
+                ];
 
-                // Correction: In Vite, we should probably move 'content' to 'public/content' OR rely on an import map.
-                // For simplicity now, I'll assume we can fetch '/content/posts/' + slug + '.md'
-                // If it fails, we might need to change where posts are stored or copy them to public.
+                let response;
+                for (const path of paths) {
+                    try {
+                        const res = await fetch(path);
+                        if (res.ok) {
+                            response = res;
+                            console.log('Successfully loaded post from:', path);
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
 
-                const response = await fetch(`/content/posts/${slug}.md`);
-
-                if (!response.ok) {
+                if (!response || !response.ok) {
                     throw new Error('Post not found');
                 }
 
@@ -181,7 +187,7 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById('post-title').innerText = 'Error loading post';
-                document.getElementById('post-content').innerText = 'Could not find the post files. Ensure they are in content/posts.';
+                document.getElementById('post-content').innerText = 'Could not find the post files. Ensure they are in content/posts or public/content/posts.';
             }
         });
     </script>
