@@ -125,3 +125,27 @@ if (fs.existsSync(docsDir)) {
     console.log('No documents directory found, skipping.');
     fs.writeFileSync(dogsOutputFile, JSON.stringify([]));
 }
+
+// Projects Generation
+const projectsDir = path.join(__dirname, 'public/content/projects');
+const projectsOutputFile = path.join(outputDir, 'projects.json');
+
+if (fs.existsSync(projectsDir)) {
+    const projects = fs.readdirSync(projectsDir)
+        .filter(file => file.endsWith('.md'))
+        .map(file => {
+            const content = fs.readFileSync(path.join(projectsDir, file), 'utf-8');
+            const data = parseFrontmatter(content);
+            return {
+                slug: file.replace('.md', ''),
+                ...data
+            };
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    fs.writeFileSync(projectsOutputFile, JSON.stringify(projects, null, 2));
+    console.log(`Generated projects.json with ${projects.length} projects.`);
+} else {
+    console.log('No projects directory found, creating empty array.');
+    fs.writeFileSync(projectsOutputFile, JSON.stringify([]));
+}

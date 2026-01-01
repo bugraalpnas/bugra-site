@@ -530,4 +530,149 @@ html {
     margin: 0;
 }
 
-```
+
+/* Projects Redesign */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.project-card {
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-cyan);
+}
+
+.project-image {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    background-color: #333;
+}
+
+.project-info {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-info h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+.project-desc {
+    font-size: 0.9rem;
+    color: var(--accent-gray);
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.project-tag {
+    background: #1a1a1a;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    color: var(--accent-blue);
+    border: 1px solid #333;
+}
+
+.view-project-btn {
+    background: var(--accent-cyan);
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    transition: opacity 0.2s;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.view-project-btn:hover {
+    opacity: 0.9;
+}
+
+.project-link {
+    display: block;
+    text-align: center;
+    color: var(--link-color);
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #333;
+    width: 90%;
+    max-width: 1200px;
+    border-radius: 8px;
+    position: relative;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.close-modal {
+    color: #fff;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    z-index: 1001;
+}
+
+.close-modal:hover {
+    color: var(--accent-red);
+}
+
+#modal-body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+}
+
+#modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

@@ -30,3 +30,19 @@ collections:
       - { label: "File", name: "file", widget: "file" }
       - { label: "Category", name: "category", widget: "select", options: ["Papers & Publications", "Other Documents"], default: "Papers & Publications" }
       - { label: "Description", name: "description", widget: "text", required: false }
+
+  - name: "projects"
+    label: "Projects"
+    folder: "public/content/projects"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Project Date", name: "date", widget: "datetime" }
+      - { label: "Thumbnail Image", name: "image", widget: "image", required: false }
+      - { label: "Highlight Project", name: "highlight", widget: "boolean", default: false }
+      - { label: "Short Description", name: "description", widget: "text" }
+      - { label: "Embed Code (Power BI / YouTube etc.)", name: "embedCode", widget: "text", required: false }
+      - { label: "External Link", name: "link", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Body", name: "body", widget: "markdown", required: false }

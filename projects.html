@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documents | Bugra Alp Nas</title>
+    <title>Projects | Bugra Alp Nas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -49,30 +49,49 @@
                 <a href="/posts.html">posts</a>
                 <a href="/resume.html">resume</a>
                 <a href="#">research</a>
-                <a href="/projects.html">projects</a>
+                <a href="/projects.html" class="active">projects</a>
                 <a href="#">talks</a>
-                <a href="/documents.html" class="active">documents</a>
+                <a href="/documents.html">documents</a>
             </nav>
         </header>
 
         <main>
-            <section class="posts-section">
-                <h1>Documents</h1>
+            <section class="projects-section">
+                <h1>Projects</h1>
+                <p class="intro">A collection of my data engineering projects, dashboards, and experiments.</p>
 
-                <div class="posts-list" id="docs-container">
-                    <p>Loading documents...</p>
+                <div class="projects-grid" id="projects-container">
+                    <p>Loading projects...</p>
                 </div>
             </section>
         </main>
     </div>
 
+    <!-- Project Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const container = document.getElementById('docs-container');
+            const container = document.getElementById('projects-container');
+            const modal = document.getElementById('project-modal');
+            const modalBody = document.getElementById('modal-body');
+            const closeModal = document.querySelector('.close-modal');
+
+            closeModal.onclick = () => modal.style.display = "none";
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                    modalBody.innerHTML = ''; // Clear content to stop iframes
+                }
+            }
 
             try {
-                // Try multiple potential paths for documents.json
-                const paths = ['/documents.json', '/public/documents.json', './documents.json', './public/documents.json'];
+                const paths = ['/projects.json', '/public/projects.json', './projects.json'];
                 let response;
 
                 for (const path of paths) {
@@ -80,78 +99,62 @@
                         const res = await fetch(path);
                         if (res.ok) {
                             response = res;
-                            console.log('Successfully loaded documents from:', path);
                             break;
                         }
-                    } catch (e) {
-                        continue;
-                    }
+                    } catch (e) { continue; }
                 }
 
                 if (response && response.ok) {
-                    const docs = await response.json();
-                    if (docs.length === 0) {
-                        container.innerHTML = '<p>No documents found.</p>';
+                    const projects = await response.json();
+
+                    if (projects.length === 0) {
+                        container.innerHTML = '<p>No projects found yet.</p>';
                         return;
                     }
 
-                    // Group by category
-                    const categories = {
-                        "Papers & Publications": [],
-                        "Other Documents": []
-                    };
-
-                    docs.forEach(doc => {
-                        const cat = doc.category || "Other Documents";
-                        if (categories[cat]) {
-                            categories[cat].push(doc);
-                        } else {
-                            // Fallback for any unknown category
-                            if (!categories["Other Documents"]) categories["Other Documents"] = [];
-                            categories["Other Documents"].push(doc);
-                        }
-                    });
-
                     container.innerHTML = '';
 
-                    Object.keys(categories).forEach(catName => {
-                        const categoryDocs = categories[catName];
-                        if (categoryDocs.length === 0) return;
+                    projects.forEach(project => {
+                        const card = document.createElement('div');
+                        card.className = 'project-card';
 
-                        const section = document.createElement('section');
-                        section.className = 'doc-section';
+                        // Handle image path - Decap CMS usually saves relative to public folder in config
+                        // but we need to ensure it resolves correctly in the browser
+                        let imagePath = project.image;
+                        if (imagePath && !imagePath.startsWith('/') && !imagePath.startsWith('http')) {
+                            imagePath = '/' + imagePath;
+                        }
 
-                        const title = document.createElement('h2');
-                        title.className = 'doc-section-title';
-                        title.textContent = catName;
-                        section.appendChild(title);
-
-                        const grid = document.createElement('div');
-                        grid.className = 'doc-grid';
-
-                        categoryDocs.forEach(doc => {
-                            const card = document.createElement('div');
-                            card.className = 'doc-item-card';
-
-                            card.innerHTML = `
-                                <h3>
-                                    <a href="${doc.file}" target="_blank">${doc.title}</a>
-                                </h3>
-                                <div class="doc-line"></div>
-                                ${doc.description ? `<p>${doc.description}</p>` : ''}
-                            `;
-                            grid.appendChild(card);
-                        });
-
-                        section.appendChild(grid);
-                        container.appendChild(section);
+                        card.innerHTML = `
+                            ${project.image ? `<div class="project-image" style="background-image: url('${imagePath}')"></div>` : ''}
+                            <div class="project-info">
+                                <h3>${project.title}</h3>
+                                <p class="project-desc">${project.description || ''}</p>
+                                <div class="project-tags">
+                                    ${(project.tags || []).map(tag => `<span class="project-tag">${tag}</span>`).join('')}
+                                </div>
+                                ${project.embedCode ? `<button class="view-project-btn" data-embed='${project.embedCode}'>View Project</button>` : ''}
+                                ${project.link ? `<a href="${project.link}" target="_blank" class="project-link">External Link &nearr;</a>` : ''}
+                            </div>
+                        `;
+                        container.appendChild(card);
                     });
+
+                    // Add click listeners for buttons
+                    document.querySelectorAll('.view-project-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const embedCode = e.target.getAttribute('data-embed');
+                            modalBody.innerHTML = embedCode;
+                            modal.style.display = "block";
+                        });
+                    });
+
                 } else {
-                    container.innerHTML = '<p>No documents found or failed to load.</p>';
+                    container.innerHTML = '<p>No projects found.</p>';
                 }
             } catch (error) {
                 console.error(error);
-                container.innerHTML = '<p>Error loading documents.</p>';
+                container.innerHTML = '<p>Error loading projects.</p>';
             }
         });
     </script>
