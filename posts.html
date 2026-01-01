@@ -50,7 +50,6 @@
                 <a href="/resume.html">resume</a>
                 <a href="#">research</a>
                 <a href="/projects.html">projects</a>
-                <a href="#">talks</a>
                 <a href="/documents.html">documents</a>
             </nav>
         </header>
@@ -62,7 +61,7 @@
                 <div class="posts-controls">
                     <input type="text" placeholder="Search..." class="search-bar">
                     <div class="lang-filters">
-                        <button class="filter-btn active" data-lang="en">EN</button>
+                        <button class="filter-btn" data-lang="en">EN</button>
                         <button class="filter-btn" data-lang="tr">TR</button>
                     </div>
                 </div>
@@ -202,12 +201,22 @@
             // Filter logic
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    const lang = btn.dataset.lang;
+                    // Check if already active
+                    const isActive = btn.classList.contains('active');
 
-                    const filtered = allPosts.filter(post => post.lang === lang);
-                    renderPosts(filtered);
+                    // Reset all
+                    filterBtns.forEach(b => b.classList.remove('active'));
+
+                    if (!isActive) {
+                        // Activate clicked
+                        btn.classList.add('active');
+                        const lang = btn.dataset.lang;
+                        const filtered = allPosts.filter(post => post.lang === lang);
+                        renderPosts(filtered);
+                    } else {
+                        // Deactivate (showing all)
+                        renderPosts(allPosts);
+                    }
                 });
             });
         });

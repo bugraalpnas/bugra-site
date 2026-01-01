@@ -350,6 +350,16 @@ html {
     margin-bottom: 4px;
 }
 
+.resume-info h3 a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.resume-info h3 a:hover {
+    color: var(--accent-cyan);
+}
+
 .resume-info .institution {
     color: var(--text-color);
     text-decoration: underline 2px var(--accent-cyan);
@@ -615,6 +625,24 @@ html {
     opacity: 0.9;
 }
 
+.download-project-btn {
+    display: block;
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+    border: 1px solid #444;
+}
+
+.download-project-btn:hover {
+    background: #444;
+}
+
 .project-link {
     display: block;
     text-align: center;
@@ -632,7 +660,7 @@ html {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.9);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 .modal-content {

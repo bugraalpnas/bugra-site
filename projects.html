@@ -50,7 +50,6 @@
                 <a href="/resume.html">resume</a>
                 <a href="#">research</a>
                 <a href="/projects.html" class="active">projects</a>
-                <a href="#">talks</a>
                 <a href="/documents.html">documents</a>
             </nav>
         </header>
@@ -125,29 +124,38 @@
                             imagePath = '/' + imagePath;
                         }
 
+                        // Handle file path
+                        let projectFilePath = project.project_file;
+                        if (projectFilePath && !projectFilePath.startsWith('/') && !projectFilePath.startsWith('http')) {
+                            projectFilePath = '/' + projectFilePath;
+                        }
+
                         card.innerHTML = `
-                            ${project.image ? `<div class="project-image" style="background-image: url('${imagePath}')"></div>` : ''}
+                            ${project.image ? `<div class="project-image" style="background-image: url('${imagePath}')" onclick="openModal('${encodeURIComponent(imagePath)}', 'image')"></div>` : ''}
                             <div class="project-info">
                                 <h3>${project.title}</h3>
                                 <p class="project-desc">${project.description || ''}</p>
                                 <div class="project-tags">
                                     ${(project.tags || []).map(tag => `<span class="project-tag">${tag}</span>`).join('')}
                                 </div>
-                                ${project.embedCode ? `<button class="view-project-btn" data-embed='${project.embedCode}'>View Project</button>` : ''}
+                                ${project.embedCode ? `<button class="view-project-btn" onclick="openModal('${encodeURIComponent(project.embedCode)}', 'embed')">View Project</button>` : ''}
+                                ${project.project_file ? `<a href="${projectFilePath}" download class="download-project-btn">Download File &darr;</a>` : ''}
                                 ${project.link ? `<a href="${project.link}" target="_blank" class="project-link">External Link &nearr;</a>` : ''}
                             </div>
                         `;
                         container.appendChild(card);
                     });
 
-                    // Add click listeners for buttons
-                    document.querySelectorAll('.view-project-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const embedCode = e.target.getAttribute('data-embed');
-                            modalBody.innerHTML = embedCode;
-                            modal.style.display = "block";
-                        });
-                    });
+                    // Global modal function
+                    window.openModal = (content, type) => {
+                        content = decodeURIComponent(content);
+                        if (type === 'embed') {
+                            modalBody.innerHTML = content;
+                        } else if (type === 'image') {
+                            modalBody.innerHTML = `<img src="${content}" style="max-width: 100%; max-height: 100%; display: block; margin: 0 auto;">`;
+                        }
+                        modal.style.display = "block";
+                    };
 
                 } else {
                     container.innerHTML = '<p>No projects found.</p>';
