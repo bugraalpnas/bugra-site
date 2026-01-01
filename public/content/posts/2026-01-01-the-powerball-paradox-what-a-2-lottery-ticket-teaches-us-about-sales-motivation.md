@@ -1,7 +1,7 @@
 ---
 title: "The Powerball Paradox: What a $2 Lottery Ticket Teaches Us About Sales
   Motivation"
-date: 2026-01-01T17:15:00.000+03:00
+date: 2026-01-01T17:32:00.000+03:00
 lang: en
 tags:
   - powerball
