@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documents | Bugra Alp Nas</title>
+    <title>Resume | Bugra Alp Nas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -47,98 +47,85 @@
             </div>
             <nav class="nav-links">
                 <a href="/posts.html">posts</a>
-                <a href="/resume.html">resume</a>
+                <a href="/resume.html" class="active">resume</a>
                 <a href="#">research</a>
                 <a href="#">projects</a>
                 <a href="#">talks</a>
-                <a href="/documents.html" class="active">documents</a>
+                <a href="/documents.html">documents</a>
             </nav>
         </header>
 
         <main>
-            <section class="posts-section">
-                <h1>Documents</h1>
+            <div class="download-link" onclick="window.print()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                </svg>
+                Download as PDF
+            </div>
 
-                <div class="posts-list" id="docs-container">
-                    <p>Loading documents...</p>
-                </div>
-            </section>
+            <div class="resume-container">
+                <section class="resume-section">
+                    <h2>Education</h2>
+                    <div class="resume-item">
+                        <div class="resume-info">
+                            <h3>M.S. in Management Information Systems</h3>
+                            <a href="gsb.sakarya.edu.tr/en" class="institution">Sakarya University</a>
+                        </div>
+                        <div class="resume-date">2022 — Present</div>
+                    </div>
+                    <div class="resume-item">
+                        <div class="resume-info">
+                            <h3>B.S. in Industrial Engineering</h3>
+                            <a href="https://www.sakarya.edu.tr/en" class="institution">Sakarya University</a>
+                        </div>
+                        <div class="resume-date">2016 — 2020</div>
+                    </div>
+                </section>
+
+                <section class="resume-section">
+                    <h2>Work Experience</h2>
+
+                    <div class="resume-item">
+                        <div class="resume-info">
+                            <h3>Anadolu Efes</h3>
+                            <p>BI Data Analyst</p>
+                            <div class="resume-location">Istanbul, Türkiye</div>
+                            <div class="resume-tags">
+                                <span class="resume-tag">PowerBI</span>
+                                <span class="resume-tag">SQL</span>
+                                <span class="resume-tag">Clickhouse</span>
+                                <span class="resume-tag">Microsoft Fabric</span>
+                            </div>
+                        </div>
+                        <div class="resume-date">Jan 2025 — Aug 2025</div>
+                    </div>
+
+                    <div class="resume-item">
+                        <div class="resume-info">
+                            <h3>Kigili Retail</h3>
+                            <p>Sales Data Analyst</p>
+                            <div class="resume-location">Istanbul, Türkiye</div>
+                            <div class="resume-tags">
+                                <span class="resume-tag">PowerBI</span>
+                                <span class="resume-tag">SQL</span>
+                                <span class="resume-tag">Data Pipelines</span>
+                            </div>
+                        </div>
+                        <div class="resume-date">Jun 2023 — Jan 2025</div>
+                    </div>
+
+                    <div class="resume-item">
+                        <div class="resume-info">
+                            <h3>LC Waikiki</h3>
+                            <p>International Sales, Operations and Planning Specialist</p>
+                            <div class="resume-location">Istanbul, Türkiye</div>
+                        </div>
+                        <div class="resume-date">Dec 2020 — Jun 2023</div>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const container = document.getElementById('docs-container');
-
-            try {
-                const response = await fetch('/documents.json');
-                if (response.ok) {
-                    const docs = await response.json();
-                    if (docs.length === 0) {
-                        container.innerHTML = '<p>No documents found.</p>';
-                        return;
-                    }
-
-                    // Group by category
-                    const categories = {
-                        "Papers & Publications": [],
-                        "Other Documents": []
-                    };
-
-                    docs.forEach(doc => {
-                        const cat = doc.category || "Other Documents";
-                        if (categories[cat]) {
-                            categories[cat].push(doc);
-                        } else {
-                            // Fallback for any unknown category
-                            if (!categories["Other Documents"]) categories["Other Documents"] = [];
-                            categories["Other Documents"].push(doc);
-                        }
-                    });
-
-                    container.innerHTML = '';
-
-                    Object.keys(categories).forEach(catName => {
-                        const categoryDocs = categories[catName];
-                        if (categoryDocs.length === 0) return;
-
-                        const section = document.createElement('section');
-                        section.className = 'doc-section';
-
-                        const title = document.createElement('h2');
-                        title.className = 'doc-section-title';
-                        title.textContent = catName;
-                        section.appendChild(title);
-
-                        const grid = document.createElement('div');
-                        grid.className = 'doc-grid';
-
-                        categoryDocs.forEach(doc => {
-                            const card = document.createElement('div');
-                            card.className = 'doc-item-card';
-
-                            card.innerHTML = `
-                                <h3>
-                                    <a href="${doc.file}" target="_blank">${doc.title}</a>
-                                </h3>
-                                <div class="doc-line"></div>
-                                ${doc.description ? `<p>${doc.description}</p>` : ''}
-                            `;
-                            grid.appendChild(card);
-                        });
-
-                        section.appendChild(grid);
-                        container.appendChild(section);
-                    });
-                } else {
-                    container.innerHTML = '<p>No documents found or failed to load.</p>';
-                }
-            } catch (error) {
-                console.error(error);
-                container.innerHTML = '<p>Error loading documents.</p>';
-            }
-        });
-    </script>
 </body>
 
 </html>
